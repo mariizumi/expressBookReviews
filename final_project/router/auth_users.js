@@ -33,7 +33,7 @@ regd_users.post("/login", (req, res) => {
   if (authenticatedUser(username, password)) {
     let accessToken = jwt.sign({
       data: password
-    }, 'access', { expiresIn: 60 });
+    }, 'access', { expiresIn: 60 * 60 });
 
     req.session.authenticated = {
       accessToken, username
@@ -47,7 +47,30 @@ regd_users.post("/login", (req, res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  return res.status(300).json({message: "Yet to be implemented"});
+  // get review text
+  const reviewText = req.body.review;
+
+  // get username
+  const username = req.session.authenticated.username;
+  console.log(username);
+
+  // get book from ISBN
+  const book = books[req.params.isbn];
+
+  if (!book) {
+    return res.status(404).send("Book with that ISBN does not exist.");
+  }
+
+  // check if user has posted review on book before
+  if (username in book.reviews) {
+    // modify review instead of posting new one
+    book.reviews[username] = reviewText;
+    return res.status(200).send("Review successfully updated.");
+  } else {
+    // post new review
+    book.reviews[username] = reviewText;
+    return res.status(200).send("Review successfully posted.");
+  }
 });
 
 module.exports.authenticated = regd_users;
