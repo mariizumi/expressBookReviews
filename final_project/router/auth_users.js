@@ -52,7 +52,6 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 
   // get username
   const username = req.session.authenticated.username;
-  console.log(username);
 
   // get book from ISBN
   const book = books[req.params.isbn];
@@ -70,6 +69,18 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     // post new review
     book.reviews[username] = reviewText;
     return res.status(200).send("Review successfully posted.");
+  }
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  const username = req.session.authenticated.username;
+  const book = books[req.params.isbn];
+
+  if (book) {
+    delete book.reviews[username];
+    return res.status(200).send("Review successfully deleted.");
+  } else {
+    return res.status(404).send("Could not delete as review does not exist.");
   }
 });
 
