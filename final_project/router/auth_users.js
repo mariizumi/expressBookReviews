@@ -13,7 +13,7 @@ const isValid = (username) => {
   return duplicates.length == 0;
 }
 
-const authenticatedUser = (username,password) => {
+const authenticatedUser = (username, password) => {
   let validUsers = users.filter((user) => {
     return (user.username === username && user.password === password);
   });
@@ -21,7 +21,7 @@ const authenticatedUser = (username,password) => {
   return validUsers.length > 0;
 }
 
-//only registered users can login
+// Only registered users can login
 regd_users.post("/login", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
@@ -47,26 +47,26 @@ regd_users.post("/login", (req, res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  // get review text
+  // Get review text
   const reviewText = req.body.review;
 
-  // get username
+  // Get username
   const username = req.session.authenticated.username;
 
-  // get book from ISBN
+  // Get book from ISBN
   const book = books[req.params.isbn];
 
   if (!book) {
     return res.status(404).send("Book with that ISBN does not exist.");
   }
 
-  // check if user has posted review on book before
+  // Check if user has posted review on book before
   if (username in book.reviews) {
-    // modify review instead of posting new one
+    // Modify review instead of posting new one
     book.reviews[username] = reviewText;
     return res.status(200).send("Review successfully updated.");
   } else {
-    // post new review
+    // Post new review
     book.reviews[username] = reviewText;
     return res.status(200).send("Review successfully posted.");
   }
